@@ -5,6 +5,7 @@ import pyttsx3 #pip install pyttsx3 для озвучки речи милой т
 import random
 import random2
 from datetime import datetime
+import webbrowser
 #Функция для распознавание речи
 #Переменная what(что?) принимает значение про проговаривает 
 #типа такой speak("Вадим долбаеб") а она такая Вадим долбаеб
@@ -41,14 +42,14 @@ def kot():
     speak(ka)
     return listen
 def dela():
-    sho = ['Отлично, а у вас хозяин?', 'Так себе.Хозяин, я заждалась вас','Плохо, а у вас?','Классно!']
+    sho = ['Отлично, а у вас хозяин?', 'Так себе,Хозяин, я заждалась вас','Плохо, а у вас?','Классно!']
     ka = random2.choice(sho)
     speak(ka)
 
 #Залупа для чтения голоса с микрофона
 def listen():
     #указываем путь к папке model а то прога не запустится и обязательно флаг r
-    model = Model(r"D:\zxc\model")
+    model = Model(r"D:\zxc\ass\model")
     rec = KaldiRecognizer(model, 16000)
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
@@ -72,11 +73,20 @@ def listen():
                 kot()
             if x["text"] == "как дела" or x["text"] == "как жизнь молодая" or x["text"] == "как поживаешь":
                 dela()
+            if "скажи" in x["text"]:
+                x["text"] = x["text"].lstrip("скажи")
+                x["text"] = x["text"].replace(" ","",1)
+                speak(x["text"])
+            if "поиск" in x["text"]:
+                x["text"] = x["text"].lstrip("поиск")
+                x["text"] = x["text"].replace(" ","",1)
+                webbrowser.open_new_tab('https://yandex.ru/search/?text=' + x["text"])
+                
         else:
             #print(rec.PartialResult())
             pass
 #Начало программы - приветствие
-speak("Добрый день Павел")
+speak("Добрый день")
 speak("Я вас слушаю")
 #Бесконечный цикл что бы постоянно запускал функцию listen и начинал слушать
 while True:
