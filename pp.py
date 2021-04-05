@@ -63,7 +63,9 @@ def temperature(pog):
     t4 = t['temp_min']
     wi = w.wind()['speed']
     speak(f"В городе {place} температура {t1}°, ощущается как {t2}°,cкорость ветра, {wi} метра в секунду")
-
+def notepad():
+    speak("Открываю ваш блокнот")
+    os.system('notepad')
 #Залупа для чтения голоса с микрофона
 def listen():
     #указываем путь к папке model а то прога не запустится и обязательно флаг r
@@ -99,10 +101,12 @@ def listen():
                 x["text"] = x["text"].lstrip("поиск")
                 x["text"] = x["text"].replace(" ","",1)
                 webbrowser.open_new_tab('https://yandex.ru/search/?text=' + x["text"])
-            if "погода" in x["text"]:
+            if "погода" in x["text"] or "температура" in x["text"]:
                 x["text"] = x["text"].lstrip("погода")
                 pog = x["text"].replace(" ","",1)
                 temperature(pog)
+            if "блокнот" in x["text"] or "черновик" in x["text"]:
+                notepad()
                 
         else:
             #print(rec.PartialResult())
