@@ -6,6 +6,8 @@ import random
 import random2
 from datetime import datetime
 import webbrowser
+from pyowm import OWM
+from pyowm.utils.config import get_default_config
 #Функция для распознавание речи
 #Переменная what(что?) принимает значение про проговаривает 
 #типа такой speak("Вадим долбаеб") а она такая Вадим долбаеб
@@ -45,11 +47,26 @@ def dela():
     sho = ['Отлично, а у вас хозяин?', 'Так себе,Хозяин, я заждалась вас','Плохо, а у вас?','Классно!']
     ka = random2.choice(sho)
     speak(ka)
+def temperature(pog):
+    owm = OWM('8fdfb48649ee4eb956660d7bfc8d94f2')
+    place = pog
+    mgr = owm.weather_manager()
+    observation = mgr.weather_at_place(place)
+    w = observation.weather
+    config_dict = get_default_config()
+    config_dict['language'] = 'ru'
+    #температура
+    t = w.temperature("celsius")
+    t1 = t['temp']
+    t2 = t['feels_like']
+    t3 = t['temp_max']
+    t4 = t['temp_min']
+    speak(f"В городе {place} температура {t1}°, ощущается как {t2}°, максимальная {t3}°, минимальная {t4}°")
 
 #Залупа для чтения голоса с микрофона
 def listen():
     #указываем путь к папке model а то прога не запустится и обязательно флаг r
-    model = Model(r"D:\zxc\ass\model")
+    model = Model(r"D:\zxc\model")
     rec = KaldiRecognizer(model, 16000)
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
@@ -81,6 +98,10 @@ def listen():
                 x["text"] = x["text"].lstrip("поиск")
                 x["text"] = x["text"].replace(" ","",1)
                 webbrowser.open_new_tab('https://yandex.ru/search/?text=' + x["text"])
+            if "погода" in x["text"]:
+                x["text"] = x["text"].lstrip("погода")
+                pog = x["text"].replace(" ","",1)
+                temperature(pog)
                 
         else:
             #print(rec.PartialResult())
