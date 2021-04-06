@@ -8,6 +8,8 @@ from datetime import datetime
 import webbrowser
 from pyowm import OWM
 from pyowm.utils.config import get_default_config
+import pyperclip
+import cv2
 #Функция для распознавание речи
 #Переменная what(что?) принимает значение про проговаривает 
 #типа такой speak("Вадим долбаеб") а она такая Вадим долбаеб
@@ -66,10 +68,51 @@ def temperature(pog):
 def notepad():
     speak("Открываю ваш блокнот")
     os.system('notepad')
+def password_generation():
+    global password
+    password = ""
+    dlina = random.randint(10,15)
+    for x in range(dlina):
+        symbol = random.randint(0,3)
+        if symbol == 0:
+            password = password + chr(random.randint(48,57))
+        if symbol == 1:
+            password = password + chr(random.randint(65,90))
+        if symbol == 2:
+            password = password + chr(random.randint(97,122))
+        if symbol == 2:
+            password = password + random.choice("+-/*!&$#?=@<>")
+    speak("Ваш пароль")
+    print(password)
+    speak("Желаете сохранить пароль?")  
+    return listen
+def photo():
+    # Включаем первую камеру
+    cap = cv2.VideoCapture(0)
+    # "Прогреваем" камеру, чтобы снимок не был тёмным
+    for i in range(30):
+        cap.read()
+    # Делаем снимок    
+    ret, frame = cap.read()
+    #название файла
+    now = datetime.now()
+    filename = "image_" + str(now.hour)+"_"+str(now.minute)+"_"+str(now.second)+".png"
+    #путь в папку
+    put = (r'photos/')
+    # Записываем в файл
+    cv2.imwrite(put+filename, frame)   
+    # Отключаем камеру
+    cap.release()
+    os.system("cls")
+    speak("Фото сделано и сохранено в папку фото")
+    return listen
 #Залупа для чтения голоса с микрофона
 def listen():
     #указываем путь к папке model а то прога не запустится и обязательно флаг r
     model = Model(r"D:\zxc\model")
+    os.system("cls")
+    speak("Добрый день")
+    speak("Я вас слушаю")
     rec = KaldiRecognizer(model, 16000)
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
@@ -107,13 +150,19 @@ def listen():
                 temperature(pog)
             if "блокнот" in x["text"] or "черновик" in x["text"]:
                 notepad()
+            if x["text"] == "генерировать пароль" or x["text"] == "сделать пароль":
+                password_generation()
+            if x["text"] == "сохранить пароль" or x["text"] == "скопировать пароль":
+                pyperclip.copy(password)
+                speak("Пароль успешно сохранён")
+            if x["text"] == "сделай фото" or x["text"] == "селфи":
+                photo()
+                
                 
         else:
             #print(rec.PartialResult())
             pass
 #Начало программы - приветствие
-speak("Добрый день")
-speak("Я вас слушаю")
 #Бесконечный цикл что бы постоянно запускал функцию listen и начинал слушать
 while True:
     listen()
