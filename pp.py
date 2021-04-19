@@ -1,7 +1,7 @@
 from vosk import Model, KaldiRecognizer #pip install vosk распознавание речи
-import os, json #системные функции и строковая залупа хз для чего
-import pyaudio #pip install PyAudio хуй знает
-import pyttsx3 #pip install pyttsx3 для озвучки речи милой тяночкой
+import os, json #системные функции
+import pyaudio #pip install PyAudio
+import pyttsx3 #pip install pyttsx3 для озвучки речи
 import random
 import random2
 from datetime import datetime
@@ -12,7 +12,6 @@ import pyperclip
 import cv2
 #Функция для распознавание речи
 #Переменная what(что?) принимает значение про проговаривает 
-#типа такой speak("Вадим долбаеб") а она такая Вадим долбаеб
 def speak(what):
      speak_engine = pyttsx3.init()
      #Ну установка голоса
@@ -117,7 +116,6 @@ def coin():
     ka = random2.choice(sho)
     speak(ka)
     return listen
-#Залупа для чтения голоса с микрофона
 def listen():
     #указываем путь к папке model а то прога не запустится и обязательно флаг r
     model = Model(r"D:\zxc\model")
@@ -139,11 +137,11 @@ def listen():
             #ну тут понятно если ты сказал "прощай" вызывается функция goodbay()
             if x["text"] == "прощай" or x["text"] == "пока" or x["text"] == "до свидания":
                 goodbay()
-            elif x["text"] == "расскажи анекдот" or x["text"] == "анекдот" or x["text"] == "хочу посмеяться":
+            elif x["text"] == "анекдот" or x["text"] == "хочу посмеяться":
                 mem()
             if x["text"] == "сколько время" or x["text"] == "который час" or x["text"] == "время":
                 time()
-            if x["text"] == "расскажи про кота" or x["text"] == "что с моим котом":
+            if x["text"] == "что с моим котом":
                 kot()
             if x["text"] == "как дела" or x["text"] == "как жизнь молодая" or x["text"] == "как поживаешь":
                 dela()
@@ -175,9 +173,7 @@ def listen():
             if "видео" in x["text"]:
                 x["text"] = x["text"].lstrip("видео")
                 x["text"] = x["text"].replace(" ","",1)
-                webbrowser.open_new_tab('https://www.youtube.com/results?search_query=' + x["text"])
-                
-                
+                webbrowser.open_new_tab('https://www.youtube.com/results?search_query=' + x["text"])                                
         else:
             #print(rec.PartialResult())
             pass
